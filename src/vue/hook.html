@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>vue生命周期</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="top-nav-wrapper">
+        <h3>{{ title }}</h3>
+        <router-link to="/top">Top</router-link>
+        <router-link to="/middle">Middle</router-link>
+        <router-link to="/bottom">Bottom</router-link>
+      </div>
+      <div class="content-wrapper">
+        <router-view></router-view>
+      </div>
+    </div>
+
+    <script>
+      // 定义组件
+      const Top = {
+        template:
+          "<div><div>{{ content }}</div><div>{{  reverseContent }}</div><div>{{ title }}</div></div>",
+        data() {
+          return {
+            content: "This is a top component",
+            title: "top",
+            message: "The value of title is top"
+          };
+        },
+        computed: {
+          reverseContent() {
+            console.log("5:computed reverseContent");
+            return this.content.toUpperCase();
+          }
+        },
+        watch: {
+          title: function () {
+            console.log("8:watch title:", this.title);
+          }
+        },
+        beforeCreate() {
+          console.log("2:beforeCreate");
+        },
+        created() {
+          console.log("3:created");
+        },
+        beforeMount() {
+          console.log("4:beforeMount");
+        },
+        beforeRouteEnter(to, from, next) {
+          console.log("1:beforeRouteEnter");
+          next((vm) => {
+            console.log("6:beforeRouteEnter next(vm):", vm);
+            console.log("original title:", vm.title);
+            vm.title = "bottom";
+            console.log("change title:", vm.title);
+          });
+        },
+        mounted() {
+          console.log("7:mounted");
+        },
+        beforeUpdate() {
+          console.log("9:beforeUpdate");
+        },
+        updated() {
+          console.log("10:updated");
+        },
+        beforeDestory() {
+          console.log("11:beforeDestory");
+        },
+        destoryed() {
+          console.log("12:destoryed");
+        }
+      };
+      const Middle = { template: "<div>middle</div>" };
+      const Bottom = { template: "<div>bottom</div>" };
+
+      // 组件路由映射
+      const routes = [
+        { path: "/top", component: Top },
+        { path: "/middle", component: Middle },
+        { path: "/bottom", component: Bottom }
+      ];
+
+      // 实例化vue-router对象
+      const router = new VueRouter({
+        routes
+      });
+
+      // 实例化vue,并挂载vue-router
+      const vm = new Vue({
+        el: "#app",
+        router: router,
+        data: {
+          title: "Vue生命周期"
+        }
+      });
+    </script>
+  </body>
+</html>
