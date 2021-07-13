@@ -25,7 +25,7 @@
       // 定义组件
       const Top = {
         template:
-          "<div><div>{{ content }}</div><div>{{  reverseContent }}</div><div>{{ title }}</div></div>",
+          '<div><div>{{ content }}</div><div>{{  reverseContent }}</div><div>title等于{{ title }}</div><div id="btnContainer"><button @click="changeTitle()">Change Title</button></div></div>',
         data() {
           return {
             content: "This is a top component",
@@ -76,6 +76,20 @@
         },
         destoryed() {
           console.log("12:destoryed");
+        },
+        methods: {
+          changeTitle() {
+            console.log("修改top的值,转为大写");
+            this.title = this.title.toUpperCase();
+            console.log("为id=btn的div元素添加一个按钮");
+            const btnContainer = document.getElementById("btnContainer");
+            const btnElement = document.createElement("button");
+            btnElement.innerHTML = "将title转为小写";
+            btnElement.addEventListener("click", function () {
+              this.title = this.title.toLowerCase();
+            });
+            btnContainer.appendChild(btnElement);
+          }
         }
       };
       const Middle = { template: "<div>middle</div>" };
