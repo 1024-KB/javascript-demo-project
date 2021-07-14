@@ -12,12 +12,14 @@
     <div id="app">
       <div class="top-nav-wrapper">
         <h3>{{ title }}</h3>
-        <router-link to="/top">Top</router-link>
+        <router-link to="/top/topSon">Top</router-link>
         <router-link to="/middle">Middle</router-link>
         <router-link to="/bottom">Bottom</router-link>
       </div>
       <div class="content-wrapper">
-        <router-view></router-view>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
       </div>
     </div>
 
@@ -25,12 +27,14 @@
       // 定义组件
       const Top = {
         template:
-          '<div><div>{{ content }}</div><div>{{  reverseContent }}</div><div>title等于{{ title }}</div><div id="btnContainer"><button @click="changeTitle()">Change Title</button></div></div>',
+          '<div> <div>{{ content }}</div> <div>{{  reverseContent }}</div> <div>title等于{{ title }}</div> <keep-alive :include="whiteList"> <router-view></router-view> </keep-alive> <div id="btnContainer"> <button @click="changeTitle()">Change Title</button> <button @click="toggleTop()">{{ btnTitle }}</button></div> </div>',
         data() {
           return {
             content: "This is a top component",
             title: "top",
-            message: "The value of title is top"
+            message: "The value of title is top",
+            whiteList: ['TopSon', 'TopDaughter'],
+            btnTitle: "Toggle top daughter!"
           };
         },
         computed: {
@@ -53,10 +57,19 @@
         beforeMount() {
           console.log("4:beforeMount");
         },
+        /**
+         * beforeRouterEnter组件内守卫在vue生命周期的执行循序：
+         * 1: beforeRouterEnter 先于 beforeCreate()
+         * 2: beforeMount() > beforeRouterEnter的回调函数next() > mounted()
+         * 3: 如果beforeRouterEnter的回调函数next()中存在异步操作，则异步操作mounted()之后执行
+         */
         beforeRouteEnter(to, from, next) {
           console.log("1:beforeRouteEnter");
           next((vm) => {
             console.log("6:beforeRouteEnter next(vm):", vm);
+            setTimeout(function() {
+              console.log('next setTimeout')
+            }, 0.01)
             console.log("original title:", vm.title);
             vm.title = "bottom";
             console.log("change title:", vm.title);
@@ -67,6 +80,16 @@
         },
         beforeUpdate() {
           console.log("9:beforeUpdate");
+        },
+        /**
+         * activated()生命周期执行循序
+         * 1：beforeUpdate() > activated() > updated()
+         */ 
+        activated() {
+          console.log('activated')
+        },
+        deactivated() {
+          console.log('deactivated');
         },
         updated() {
           console.log("10:updated");
@@ -89,17 +112,41 @@
               this.title = this.title.toLowerCase();
             });
             btnContainer.appendChild(btnElement);
+          },
+          toggleTop() {
+            if (this.$route.path === '/top/topSon') {
+              this.bthTitle = "Toggle top son"
+              this.$router.push('/top/topDaughter')
+            } else {
+              this.btnTitle = "Toggle top daughter"
+              this.$router.push('/top/topSon')
+            }
           }
         }
       };
-      const Middle = { template: "<div>middle</div>" };
-      const Bottom = { template: "<div>bottom</div>" };
+      const TopSon = {name: "TopSon", template: "<div> This is a son component of Top!</div>"}
+      const TopDaughter = {name: "TopDaughter", template: "<div> This is a daughter component of Top!</div>"}
+      const Middle = {name: "Middle",  template: "<div>middle</div>" };
+      const Bottom = {name: "Bottom",  template: "<div>bottom</div>" };
 
       // 组件路由映射
       const routes = [
-        { path: "/top", component: Top },
-        { path: "/middle", component: Middle },
-        { path: "/bottom", component: Bottom }
+        { 
+          path: "/top",
+          name: "TOP", 
+          component: Top,
+          children: [
+            {
+              path: 'topSon',
+              component: TopSon
+            },
+            {
+              path: 'topDaughter',
+              component: TopDaughter
+            }
+          ] },
+        {name: "Middle", path: "/middle", component: Middle },
+        {name: "Bottom", path: "/bottom", component: Bottom }
       ];
 
       // 实例化vue-router对象
