@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>javacript的date对象</title>
+  </head>
+  <body>
+    <header></header>
+    <main>
+      <h3>Date对象</h3>
+      <span>
+        toISOString() 方法可以使用ISO标准将 Date 对象转换为字符串。 该标准称为
+        ISO-8601 ，格式为: YYYY-MM-DDTHH:mm:ss.sssZ，
+        使用此标准实例化date对象会+8个小时
+      </span>
+      <ul>
+        <li>
+          <button onclick="generateDate1()">new Date():</button
+          ><span id="span1"></span>
+        </li>
+        <li>
+          <button onclick="generateDate2('2021-01-01T12:00:00.000Z')">
+            2021-01-01T12:00:00.000Z</button
+          ><span id="span2"></span>
+        </li>
+        <li>
+          <button onclick="generateDate3()">2021,0,1,12,0,0</button
+          ><span id="span3"></span>
+        </li>
+        <li>
+          <button onclick="generateDate4()">Junuary 1,2021 12:00:00</button
+          ><span id="span4"></span>
+        </li>
+      </ul>
+    </main>
+    <footer></footer>
+    <script>
+      function generateDate1() {
+        const date = new Date();
+        console.log(date);
+        const span1 = document.getElementById("span1");
+        span1.innerHTML = this.format(date);
+      }
+
+      function generateDate2(dateString) {
+        const date = new Date(dateString);
+        console.log(date);
+        const span2 = document.getElementById("span2");
+        span2.innerHTML = this.format(date);
+      }
+      function generateDate3() {
+        const date = new Date(2021, 0, 1, 12, 0, 0);
+        console.log(date);
+        const span3 = document.getElementById("span3");
+        span3.innerHTML = this.format(date);
+      }
+      function generateDate4() {
+        const date = new Date("January 1,2021 12:00:00");
+        console.log(date);
+        const span4 = document.getElementById("span4");
+        span4.innerHTML = this.format(date);
+      }
+
+      function format(dateObj) {
+        const fullYear = dateObj.getFullYear();
+        const month = dateObj.getMonth();
+        const date = dateObj.getDate();
+        const hours = dateObj.getHours();
+        const minutes = dateObj.getMinutes();
+        const seconds = dateObj.getSeconds();
+        return [fullYear, month, date, hours, minutes, seconds];
+      }
+    </script>
+  </body>
+</html>
